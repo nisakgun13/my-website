@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sürpriz Etkinlik Sayfası</title>
+<style>
+  :root {
+    --accent: #6b2fa3;
+    --accent-hover: #562482;
+    --card: #ffffff;
+    --bg: #f4f6fb;
+    --shadow: 0 10px 25px rgba(20, 20, 40, 0.1);
+    --font-main: "Segoe UI", Roboto, Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #eef6ff 0%, #f9f9fb 100%);
+    color: #333;
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+
+  .container {
+    width: 90%;
+    max-width: 1100px;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  /* --- SOL KOLON --- */
+  .controls { display: flex; gap: 15px; margin-bottom: 25px; }
+  
+  .btn {
+    background: var(--accent); color: white; padding: 12px 24px;
+    border-radius: 50px; border: none; cursor: pointer;
+    font-weight: 600; font-size: 15px; box-shadow: 0 4px 10px rgba(107, 47, 163, 0.2);
+    transition: all 0.2s ease;
+  }
+  .btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+  .btn:active { transform: scale(0.96); }
+  .btn.secondary { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+  .btn.secondary:hover { background: #fdf5ff; }
+
+  .content-box {
+    background: #fff; border-radius: 16px; padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee;
+    min-height: 200px; animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+  .hidden { display: none; }
+
+  .story-text {
+    white-space: pre-wrap; line-height: 1.7; font-size: 15px;
+    color: #444; max-height: 350px; overflow-y: auto; padding-right: 10px;
+  }
+
+  .wish-container { display: flex; align-items: center; gap: 20px; margin-top: 10px; }
+  .candle-wrapper { position: relative; width: 60px; height: 100px; flex-shrink: 0; }
+  .wax {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 24px; height: 50px; background: #ffcc80; border-radius: 4px;
+    box-shadow: inset -5px 0 0 rgba(0,0,0,0.05);
+  }
+  .wick {
+    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 10px; background: #333;
+  }
+  .flame {
+    position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+    width: 16px; height: 26px;
+    background: radial-gradient(ellipse at bottom, #ffee58, #ff6f00);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 0 0 10px rgba(255, 160, 0, 0.6);
+    animation: flicker 1s infinite alternate; transition: opacity 0.5s;
+  }
+  .flame.off { opacity: 0; animation: none; }
+  @keyframes flicker { 0% { transform: translateX(-50%) scale(1); opacity: 1; } 100% { transform: translateX(-50%) scale(1.1); opacity: 0.9; } }
+
+  .wish-form { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .wish-input {
+    width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+    border-radius: 10px; font-size: 15px; outline: none; transition: border-color 0.2s; box-sizing: border-box;
+  }
+  .wish-input:focus { border-color: var(--accent); }
+  .blow-btn {
+    align-self: flex-start; background: #ff6b6b; color: white; border: none;
+    padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+  }
+  .blow-btn:hover { background: #ff5252; }
+  .status-msg { font-size: 14px; font-weight: 600; min-height: 20px; margin-top: 5px; }
+
+  /* Fotoğraf Albümü */
+  .album-section { margin-top: 30px; }
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px;
+  }
+  .grid img {
+    width: 100%; height: 90px; object-fit: cover; border-radius: 8px;
+    border: 3px solid white; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease; cursor: pointer;
+  }
+  .grid img:hover { transform: scale(1.08) rotate(1deg); z-index: 2; }
+
+  /* --- SAĞ KOLON --- */
+  .right-col {
+    display: flex; flex-direction: column; align-items: center; gap: 30px;
+    border-left: 1px solid #eee; padding-left: 20px;
+  }
+  .wheel-container { position: relative; width: 240px; height: 240px; margin: 0 auto; }
+  .pointer {
+    position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+    border-top: 25px solid #333; z-index: 10; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+  }
+  .wheel {
+    width: 100%; height: 100%; border-radius: 50%; border: 8px solid #fff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15); transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .spin-btn {
+    margin-top: 15px; background: #2d9bf0; color: white; border: none;
+    padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(45, 155, 240, 0.3);
+  }
+  .spin-btn:disabled { background: #ccc; cursor: default; box-shadow: none; }
+  .result-box {
+    margin-top: 10px; width: 100%; text-align: center; padding: 10px; border-radius: 8px;
+    background: #fff; font-weight: bold; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    min-height: 40px; display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Avatar Kartı */
+  .avatar-card {
+    position: relative; width: 160px; height: 160px;
+    background: #fff; border-radius: 12px; padding: 8px; box-shadow: var(--shadow);
+    display: flex; justify-content: center; align-items: center;
+  }
+  .avatar-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  
+  .hearts-container {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 100px; pointer-events: none;
+  }
+  .heart { position: absolute; bottom: 0; left: 50%; font-size: 20px; color: #ff4081; opacity: 0; }
+  .h1 { animation: floatUp 2.5s infinite ease-in; left: 40%; }
+  .h2 { animation: floatUp 3s infinite ease-in 0.5s; left: 50%; font-size: 24px; }
+  .h3 { animation: floatUp 2.8s infinite ease-in 1s; left: 60%; }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
+  }
+  @media (max-width: 850px) {
+    .container { grid-template-columns: 1fr; padding: 20px; }
+    .right-col { border-left: none; border-top: 1px solid #eee; padding-top: 30px; padding-left: 0; flex-direction: row; justify-content: space-around; flex-wrap: wrap; }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="left-col">
+    <div class="controls">
+      <button class="btn" id="btnStory">📖 Hikâyemiz</button>
+      <button class="btn secondary" id="btnWish">🎂 Dilek Dile</button>
+    </div>
+
+    <div id="panelStory" class="content-box">
+      <h3 style="margin-top:0; color:var(--accent)">Bize Dair Bir Masal</h3>
+      <div class="story-text" id="storyContent"></div>
+    </div>
+
+    <div id="panelWish" class="content-box hidden">
+      <h3 style="margin-top:0; color:#ff6b6b">Dileğini Tut ve Üfle</h3>
+      <p style="color:#666; font-size:14px;">Gözlerini kapat, dileğini yaz ve mumu söndür...</p>
+      
+      <div class="wish-container">
+        <div class="candle-wrapper">
+          <div class="wax"></div>
+          <div class="wick"></div>
+          <div class="flame" id="candleFlame"></div>
+        </div>
+        
+        <div class="wish-form">
+          <input type="text" id="wishInput" class="wish-input" placeholder="Dileğin nedir?" maxlength="100">
+          <button class="blow-btn" id="btnBlow">ÜFLE</button>
+          <div class="status-msg" id="wishStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="album-section">
+      <h4 style="color:#555; margin-bottom:10px;">Anılarımız</h4>
+      <div class="grid">
+        <img src="images/resim1.jpg" alt="Foto 1" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim2.jpg" alt="Foto 2" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim3.jpg" alt="Foto 3" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim4.jpg" alt="Foto 4" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim5.jpg" alt="Foto 5" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim6.jpg" alt="Foto 6" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim7.jpg" alt="Foto 7" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+        <img src="images/resim8.jpg" alt="Foto 8" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    
+    <div style="text-align:center">
+      <div class="wheel-container">
+        <div class="pointer"></div> <div class="wheel" id="wheel"></div>
+      </div>
+      <div class="result-box" id="wheelResult">Şansını Dene!</div>
+      <button class="spin-btn" id="btnSpin">ÇARKI DÖNDÜR</button>
+    </div>
+
+    <div class="avatar-card">
+      <div class="hearts-container">
+        <div class="heart h1">❤</div>
+        <div class="heart h2">❤</div>
+        <div class="heart h3">❤</div>
+      </div>
+      <img src="images/biz.jpg" alt="Bizim Fotoğrafımız" onerror="this.src='https://via.placeholder.com/200?text=Resim+Yok'">
+    </div>
+
+  </div>
+</div>
+
+<script>
+const storyText = `Evvel zaman içinde, kalbur saman içinde, cinler cirit atarken eski hamamın içinde... Uzak diyarların birinde, Nisa adında, kalbi temiz, meraklı mı meraklı, dünya güzeli küçük bir kız yaşarmış.
+
+Nisa, zamanının çoğunu insanların birbirini görmeden konuştuğu, sesini duymadan anlaştığı "Sihirli Aynalar Ülkesi"nde (Sosyal Medya) geçirirmiş. Bir gün bu aynalar diyarında dolaşırken, kapısı gizemli bir sisle kaplı bir yolcunun hanına denk gelmiş. Bu hanın kapısında, kimselerin dilinden anlamadığı, tuhaf bir yazı asılıymış. Nisa okumuş, okumuş ama bir anlam verememiş. İçindeki merak ateşi öyle büyümüş ki, dayanamamış ve hanın sahibine, görünmez bir kuşla haber salmış:
+
+"Ey yolcu! Kapındaki o sayıların sırrı nedir? Yoksa sen gerçekten ta 2036 yılına kadar mı ilim tahsil edeceksin?"
+
+Hanın sahibi, Ahmet Hakan adında bir delikanlıymış. Nisa’nın bu saf ve şaşkın sorusunu duyunca kahkahalarla gülmüş. Cevap vermiş ve o gizemli yazının sırrını açıklamış. Nisa cevabı öğrenince yanakları al al olmuş, utancından yerin dibine girmek istemiş. Ama Ahmet Hakan’ın dili tatlıymış, sohbet sohbeti açmış.
+
+İkili, sihirli aynaların ardından günlerce, gecelerce konuşmuşlar. Dostlukları bir çiçek gibi filizlenmiş. Lakin her güzel şeyin bir sonu olduğu gibi, zamanla aralarına soğuk rüzgarlar girmiş, kelimeler tükenmiş ve o görünmez bağ kopuvermiş.
+
+Aradan aylar değil, tam dört koca yıl geçmiş. Dört bahar çiçek açmış, dört kış kar yağmış.
+
+Bu süre zarfında Ahmet Hakan, Nisa’yı hiç unutamamış. Ama bilinmeyen bir gerçek varmış: Ahmet Hakan aslında göründüğü gibi biri değilmiş. O, kalbinin derinliklerinde karanlık niyetler taşıyan, insanları kandırmayı seven korkunç bir canavarmış. Maskesini takar, kurbanlarını öyle beklermiş.
+
+Dört yılın sonunda, canavarın aklına yine Nisa düşmüş. "Acaba," demiş, "O saf kız hâlâ orada mı?" Ve karanlık bir niyetle, eski dostuna bir mesaj daha yollamış:
+
+"Hey! Sen o benim tanıdığım Nisa mısın?"
+
+Nisa, kötülükten habersiz, "Evet, benim," diye yanıtlayınca, kaderin ağları yeniden örülmeye başlamış. Başlangıçta Ahmet Hakan, dişlerini gizleyen bir kurt gibi yaklaşmış Nisa’ya. Niyeti onu kandırmak, kalbiyle oynamakmış.
+
+Fakat Nisa’nın yüreği o kadar aydınlık, sevgisi o kadar safmış ki, bu ışık canavarın karanlık kalbine sızmaya başlamış. Ahmet Hakan, Nisa ile konuştukça içindeki kötülüğün eridiğini, o sivri pençelerinin yok olduğunu hissetmiş. Kötü niyetle başladığı yolda, aşka tutulmuş. Canavar, insan olmaya karar vermiş.
+
+Ahmet Hakan, Nisa’yı üzmemek için eski kötü huylarını birer birer terk etmiş, içindeki canavarı sonsuzluğa uğurlamış. Dostlukları, dillere destan bir sevdaya dönüşmüş.
+
+Karanlık niyetlerle gelen yolcu, aşkın gücüyle iyileşmiş. Ahmet Hakan ve Nisa, geçmişin sislerini dağıtıp, geleceklerini aydınlatmışlar.
+
+Onlar ermiş muradına, biz çıkalım kerevetine...`;
+
+const segments = [
+  { color: "#FFC107", msg: "İyiki doğdun sevgilim! 🎂" },
+  { color: "#FF5722", msg: "En büyük şansım sensin! 🍀" },
+  { color: "#E91E63", msg: "Seni çok seviyorum! ❤️" },
+  { color: "#9C27B0", msg: "Bana bir şarkı söyle! 🎵" },
+  { color: "#4CAF50", msg: "Ödül: Kocaman bir öpücük! 💋" },
+  { color: "#2196F3", msg: "Sarılma hakkı kazandın! 🤗" }
+];
+
+document.getElementById('storyContent').textContent = storyText;
+
+const btnStory = document.getElementById('btnStory');
+const btnWish = document.getElementById('btnWish');
+const panelStory = document.getElementById('panelStory');
+const panelWish = document.getElementById('panelWish');
+
+btnStory.addEventListener('click', () => {
+  panelStory.classList.remove('hidden');
+  panelWish.classList.add('hidden');
+  btnStory.classList.remove('secondary');
+  btnWish.classList.add('secondary');
+});
+
+btnWish.addEventListener('click', () => {
+  panelStory.classList.add('hidden');
+  panelWish.classList.remove('hidden');
+  btnStory.classList.add('secondary');
+  btnWish.classList.remove('secondary');
+});
+
+const btnBlow = document.getElementById('btnBlow');
+const candleFlame = document.getElementById('candleFlame');
+const wishInput = document.getElementById('wishInput');
+const wishStatus = document.getElementById('wishStatus');
+
+btnBlow.addEventListener('click', () => {
+  const text = wishInput.value.trim();
+  if(text === "") {
+    wishStatus.textContent = "Lütfen önce bir dilek tut...";
+    wishStatus.style.color = "red";
+    return;
+  }
+  candleFlame.classList.add('off');
+  wishStatus.textContent = "Dileğin evrene iletildi! ✨";
+  wishStatus.style.color = "green";
+  btnBlow.disabled = true;
+  setTimeout(() => {
+    candleFlame.classList.remove('off');
+    wishInput.value = "";
+    wishStatus.textContent = "";
+    btnBlow.disabled = false;
+  }, 4000);
+});
+
+const wheel = document.getElementById('wheel');
+const btnSpin = document.getElementById('btnSpin');
+const wheelResult = document.getElementById('wheelResult');
+
+const sliceAngle = 360 / segments.length;
+let gradientStr = "";
+segments.forEach((seg, index) => {
+  const start = index * sliceAngle;
+  const end = (index + 1) * sliceAngle;
+  gradientStr += `${seg.color} ${start}deg ${end}deg, `;
+});
+wheel.style.background = `conic-gradient(${gradientStr.slice(0, -2)})`;
+
+let isSpinning = false;
+btnSpin.addEventListener('click', () => {
+  if (isSpinning) return;
+  isSpinning = true;
+  btnSpin.disabled = true;
+  wheelResult.textContent = "Dönüyor...";
+  wheelResult.style.background = "#fff";
+  wheelResult.style.color = "#333";
+
+  const randomDeg = Math.floor(Math.random() * 360);
+  const totalSpin = 1800 + randomDeg;
+
+  wheel.style.transform = `rotate(${totalSpin}deg)`;
+
+  setTimeout(() => {
+    isSpinning = false;
+    btnSpin.disabled = false;
+    const finalAngle = totalSpin % 360; 
+    const winningAngle = (360 - finalAngle) % 360; 
+    const winIndex = Math.floor(winningAngle / sliceAngle);
+    const winner = segments[winIndex];
+
+    wheelResult.textContent = winner.msg;
+    wheelResult.style.background = winner.color;
+    wheelResult.style.color = "#fff";
+    
+    wheel.style.transition = 'none';
+    wheel.style.transform = `rotate(${finalAngle}deg)`;
+    setTimeout(() => {
+      wheel.style.transition = 'transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)';
+    }, 50);
+  }, 4000);
+});
+</script>
+</body>
+</html>
